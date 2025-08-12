@@ -77,8 +77,4 @@ itens = [
     Item("maiô", 0.3, 0.5, "roupa", "feminino", estacao="verao"),
 ]
 
-item_individuo = itens[0]
-n_variaveis = 0
-for atributo, valor in vars(item_individuo).items():
-    if valor is not None:
-        n_variaveis += 1
+#print("Quantidade de itens no item.py:", len(itens))

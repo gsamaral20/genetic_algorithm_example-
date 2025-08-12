@@ -5,23 +5,18 @@ from item import itens
 
 # Retringir gênero
 
+def restringir_genero(pontos, genero_viajante, individuo, itens):
+
+    for indice, selecao in enumerate(individuo):
+        if genero_viajante == "masculino":
+            if selecao != 0:
+                if itens[indice].genero == "feminino":
+                    individuo[indice] = 0
+    pontos = sum(individuo)
+    return pontos
+
+
 def restringir_item_genero(pontos, genero_viajante, individuo, itens):
-    """
-    Restringe a seleção de itens incompatíveis com o gênero do viajante.
-    
-    Se o gênero do viajante for "masculino" e o indivíduo selecionar algum item de gênero "feminino",
-    a função retorna 0, indicando que a solução é inválida para o algoritmo genético.
-    Caso contrário, retorna os pontos originais.
-
-    Parâmetros:
-    - pontos (float): valor da fitness calculada para o indivíduo.
-    - genero_viajante (str): gênero do viajante, por exemplo, "masculino" ou "feminino".
-    - individuo (list[int]): lista representando a seleção dos itens (quantidade de cada item).
-    - itens (list[obj]): lista de objetos que possuem o atributo 'genero' indicando o gênero do item.
-
-    Retorno:
-    - float: retorna 0 se houver conflito de gênero, caso contrário retorna os pontos originais.
-    """
     for indice, selecao in enumerate(individuo):
         if genero_viajante == "masculino":
             if selecao != 0:
@@ -34,81 +29,39 @@ def restringir_item_genero(pontos, genero_viajante, individuo, itens):
 # Capacidade da mochila
 
 def restringir_capacidade_mochila(pontos, capacidade_mochila, individuo, itens):
-    """
-    Calcula o peso total de um indivíduo (lista de seleções) e verifica 
-    se está dentro da capacidade da mochila.
-
-    Parâmetros:
-    - pontos (float): pontos calculados pela fitness do indíviduo
-    - capacidade_mochila (float): limite máximo de peso que a mochila suporta.
-    - individuo (list[int]): lista binária representando a seleção de itens (1 = selecionado, 0 = não selecionado).
-    - itens (list[object]): lista de objetos contendo o atributo 'peso' para cada item possível.
-
-    Retorno:
-    - float: pontos se o peso total do indivíduo estiver dentro da capacidade; 
-             0 caso ultrapasse a capacidade.
-    """
-
     peso_total_individuo = 0
 
     for indice, selecao in enumerate(individuo):
         if selecao != 0:
             peso_total_individuo += itens[indice].peso * selecao
 
-    print(round(peso_total_individuo, 2))
+    #print(round(peso_total_individuo, 2))
 
     if peso_total_individuo <= capacidade_mochila:
         return pontos
     else:
-        return 0
+        return pontos - 50
 
 # Volume da mochila
 
 def restringir_volume_mochila(pontos, volume_mochila, individuo, itens):
-    """
-    Calcula o volume total dos itens selecionados e verifica se está dentro da capacidade da mochila.
-
-    Parâmetros:
-    - pontos (float): pontuação atual do indivíduo.
-    - volume_mochila (float): limite máximo de volume que a mochila suporta.
-    - individuo (list[int]): lista de quantidades selecionadas para cada item (0 significa não selecionado).
-    - itens (list[object]): lista de objetos contendo o atributo 'volume' para cada item.
-
-    Retorno:
-    - float: retorna os pontos originais se o volume total estiver dentro da capacidade;
-             retorna 0 caso ultrapasse o limite (penalização máxima).
-    """
-
     volume_total_individuo = 0
 
     for indice, selecao in enumerate(individuo):
         if selecao != 0:
             volume_total_individuo += itens[indice].volume * selecao
 
-    print(round(volume_total_individuo, 2))
+    #print(round(volume_total_individuo, 2))
 
     if volume_total_individuo <= volume_mochila:
         return pontos
     else:
-        return 0
+        return pontos - 50
 
 
 # Número de peças íntimas
 
 def restringir_peca_intimas(pontos, numero_dias_viagem, individuo, itens):
-    """
-    Aplica penalizações acumuladas na pontuação para cada item de roupa íntima
-    cuja quantidade selecionada seja menor que o número de dias da viagem.
-
-    Parâmetros:
-    - pontos (float): pontuação atual do indivíduo.
-    - numero_dias_viagem (int): número mínimo ideal de peças de roupa íntima (equivale aos dias de viagem).
-    - individuo (list[int]): lista onde cada posição indica a quantidade selecionada de um item.
-    - itens (list[obj]): lista de objetos contendo informações dos itens, incluindo a categoria.
-
-    Retorna:
-    - float: pontos ajustados subtraindo 10 para cada item de roupa íntima que não cumpre a quantidade mínima.
-    """
     penalizacao = 0
     qtd_ideal_roupa_intima = numero_dias_viagem
 
@@ -119,27 +72,14 @@ def restringir_peca_intimas(pontos, numero_dias_viagem, individuo, itens):
             if itens[indice].categoria == "roupa íntima":
                 # Se a quantidade selecionada for menor que o ideal, aplica penalidade
                 if selecao < qtd_ideal_roupa_intima:
-                    penalizacao += 5
+                    penalizacao += 10
+            
 
     # Caso todas as quantidades estejam dentro do esperado, retorna os pontos originais
     return pontos - penalizacao
 
 def restringir_itens_estacao(pontos, estacao, individuo, itens):
-    """
-    Aplica penalidades na pontuação com base na incompatibilidade entre
-    a estação da viagem e a estação do item selecionado.
-
-    Parâmetros:
-    - pontos (int): pontuação atual do indivíduo.
-    - estacao (str): estação da viagem (ex: "verao", "inverno").
-    - individuo (list): lista com as quantidades selecionadas para cada item.
-    - itens (list): lista de objetos Item, cada um com atributo 'estacao'.
-
-    Retorna:
-    - pontos ajustados, com penalidades somadas para itens incompatíveis.
-    """
-
-    # Normaliza a estação para minúsculas para facilitar a comparação
+        # Normaliza a estação para minúsculas para facilitar a comparação
     estacao = estacao.lower()
     penalizacao = 0  # acumula penalizações totais
 
@@ -154,7 +94,7 @@ def restringir_itens_estacao(pontos, estacao, individuo, itens):
             if estacao == "verao":
                 # Penaliza fortemente itens que são de inverno (muito incompatíveis)
                 if item_estacao == "inverno":
-                    penalizacao += 20
+                    penalizacao += 50
                 # Penaliza menos itens de outono (menos incompatíveis)
                 elif item_estacao == "outono":
                     penalizacao += 5
@@ -163,7 +103,7 @@ def restringir_itens_estacao(pontos, estacao, individuo, itens):
             elif estacao == "inverno":
                 # Penaliza fortemente itens de verão (muito incompatíveis)
                 if item_estacao == "verao":
-                    penalizacao += 20
+                    penalizacao += 50
                 # Penaliza menos itens de primavera (menos incompatíveis)
                 elif item_estacao == "primavera":
                     penalizacao += 5
@@ -207,7 +147,7 @@ def restringir_item_unitario(pontos, individuo, itens):
                 recompensar += 5   
             if itens[indice].categoria == "roupa íntima":
                 # Acumula 5 pontos para cada item obrigatório selecionado
-                recompensar += 10    
+                recompensar += 15    
     # Retorna a pontuação original somada à recompensa total
     return pontos + recompensar
 
@@ -226,8 +166,28 @@ def recompensar_peca_intimas(pontos, numero_dias_viagem, individuo, itens):
 
     # Caso todas as quantidades estejam dentro do esperado, retorna os pontos originais
     return pontos + recompensar
+
+def restringir_categoria(pontos, numero_dias_viagem, individuo, itens):
+    penalizacao = 0
+    cont_calcado = 0  
+
+    for indice, selecao in enumerate(individuo):
+        if selecao != 0:
+            if itens[indice].categoria == "calçado":
+                if selecao > 1 and numero_dias_viagem < 7:
+                    individuo[indice] = 1
+                cont_calcado +=selecao
+            # Verifica se o item pertence à categoria "roupa íntima"
+            if itens[indice].categoria == "eletrônico":
+                # Se a quantidade selecionada for menor que o ideal, aplica penalidade
+                if selecao > 1:
+                    individuo[indice] = 1
+    if cont_calcado > numero_dias_viagem and numero_dias_viagem < 7:
+        penalizacao = 50
+    # Caso todas as quantidades estejam dentro do esperado, retorna os pontos originais
+    return pontos - penalizacao
             
-""" 
+ 
 individuo = [
     1, 0, 0, 1,  # chinelo, tênis, bota de trilha, bota
     1, 0, 1, 0,  # meia, calça jeans, calça chino, calça trilha
@@ -245,9 +205,11 @@ individuo = [
     1, 0, 1, 0,  # absorventes, escova de cabelo, secador portátil, creme hidratante
     1, 0, 1, 0,  # perfume extra, legging, roupão
 ]
-"""
+
 
 #print(restringir_capacidade_mochila(10, individuo, itens))
 
-
-
+pontos = sum(individuo)
+genero = "masculino"
+restringir_genero(pontos, genero, individuo, itens)
+print(restringir_genero(pontos, genero, individuo, itens))
