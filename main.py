@@ -3,14 +3,14 @@
 import pandas as pd
 import pygad 
 from item import itens
-from restricoes import restringir_capacidade_mochila, restringir_item_genero, restringir_item_obrigatorio, restringir_itens_estacao, restringir_peca_intimas, restringir_volume_mochila
+from restricoes import restringir_capacidade_mochila, restringir_item_genero, restringir_item_obrigatorio, restringir_itens_estacao, restringir_peca_intimas, restringir_volume_mochila, restringir_item_unitario, recompensar_peca_intimas
 
 # Input das informações gerais da viagem
-genero_viajante = str(input("Informe o gênero: "))
-capacidade_mochila = float(input("Insira a capacidade da mochila: "))
-volume_mochila = float(input("Insira o volume da mochila: "))
-numero_dias_viagem = int(input("Insira o número de dias da viagem: "))
-estacao = str(input("Informe a estação do ano que vai viajar: "))
+genero_viajante = "masculino" #str(input("Informe o gênero: "))
+capacidade_mochila = 10 #float(input("Insira a capacidade da mochila: "))
+volume_mochila = 10 #float(input("Insira o volume da mochila: "))
+numero_dias_viagem = 4 #int(input("Insira o número de dias da viagem: "))
+estacao = "verão" #str(input("Informe a estação do ano que vai viajar: "))
 
 
 # População inicial 
@@ -38,8 +38,10 @@ def fitness_function(ga_instance, individuo, solution_idx):
     # Restrições “suaves” com penalizações/recompensas
     pontos_ajustados = restringir_peca_intimas(pontos_ajustados, numero_dias_viagem, individuo, itens)
     pontos_ajustados = restringir_itens_estacao(pontos_ajustados, estacao, individuo, itens)
-    pontos_ajustados = restringir_item_obrigatorio(pontos_ajustados, True, individuo, itens)
-
+    pontos_ajustados = restringir_item_obrigatorio(pontos_ajustados, individuo, itens)
+    pontos_ajustados = restringir_item_unitario(pontos_ajustados, individuo, itens)
+    pontos_ajustados = recompensar_peca_intimas(pontos_ajustados, numero_dias_viagem, individuo, itens)
+    print(f"Indivíduo #{solution_idx}: {individuo}")  # print do indivíduo (array)
     return max(pontos_ajustados, 0)
 
 gene_space = []
@@ -54,12 +56,14 @@ for atributo, valor in vars(item_individuo).items():
 
 populacao = 10*n_variaveis
 
+num_genes = len(itens)
+
 ga_instance = pygad.GA(
     num_generations=100, 
     sol_per_pop=populacao, 
     num_parents_mating=int(populacao*0.4), 
     fitness_func=fitness_function,
-    num_genes=n_variaveis, 
+    num_genes=9, 
     gene_type=int, 
     gene_space=gene_space, 
     parent_selection_type="rws",
@@ -67,6 +71,7 @@ ga_instance = pygad.GA(
     crossover_type="single_point", 
     crossover_probability=0.8,
     mutation_type="random", 
+    mutation_probability=0.05,
     mutation_percent_genes=10
 )
 

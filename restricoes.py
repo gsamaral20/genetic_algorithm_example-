@@ -172,7 +172,7 @@ def restringir_itens_estacao(pontos, estacao, individuo, itens):
     return pontos - penalizacao
 
 
-def restringir_item_obrigatorio(pontos, obrigatorio, individuo, itens):
+def restringir_item_obrigatorio(pontos, individuo, itens):
     recompensar = 0
     # Percorre cada item selecionado pelo indivíduo
     for indice, selecao in enumerate(individuo):
@@ -181,10 +181,51 @@ def restringir_item_obrigatorio(pontos, obrigatorio, individuo, itens):
             # Verifica se o item é obrigatório
             if itens[indice].obrigatorio == True:
                 # Acumula 10 pontos para cada item obrigatório selecionado
-                recompensar += 15
+                recompensar += 5
     # Retorna a pontuação original somada à recompensa total
     return pontos + recompensar
 
+
+def restringir_item_unitario(pontos, individuo, itens):
+    recompensar = 0
+    # Percorre cada item selecionado pelo indivíduo
+    for indice, selecao in enumerate(individuo):
+        # Verifica se o item foi selecionado (quantidade maior que zero)
+        if selecao != 0:
+            # Verifica se o item é obrigatório
+            if itens[indice].categoria == "higiene" and selecao == 1:
+                # Acumula 5 pontos para cada item obrigatório selecionado
+                recompensar += 5
+            if itens[indice].categoria == "calçado" and selecao == 1:
+                # Acumula 5 pontos para cada item obrigatório selecionado
+                recompensar += 5
+            if itens[indice].categoria == "documento" and selecao == 1:
+                # Acumula 5 pontos para cada item obrigatório selecionado
+                recompensar += 15
+            if itens[indice].categoria == "eletrônico" and selecao == 1:
+                # Acumula 5 pontos para cada item obrigatório selecionado
+                recompensar += 5   
+            if itens[indice].categoria == "roupa íntima":
+                # Acumula 5 pontos para cada item obrigatório selecionado
+                recompensar += 10    
+    # Retorna a pontuação original somada à recompensa total
+    return pontos + recompensar
+
+def recompensar_peca_intimas(pontos, numero_dias_viagem, individuo, itens):
+    recompensar = 0
+    qtd_ideal_roupa_intima = numero_dias_viagem
+
+    for indice, selecao in enumerate(individuo):
+        # Verifica se o item foi selecionado (quantidade maior que zero)
+        if selecao != 0:
+            # Verifica se o item pertence à categoria "roupa íntima"
+            if itens[indice].categoria == "roupa íntima":
+                # Se a quantidade selecionada for menor que o ideal, aplica penalidade
+                if selecao == qtd_ideal_roupa_intima:
+                    recompensar += 10
+
+    # Caso todas as quantidades estejam dentro do esperado, retorna os pontos originais
+    return pontos + recompensar
             
 """ 
 individuo = [
