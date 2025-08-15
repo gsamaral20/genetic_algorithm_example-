@@ -1,7 +1,7 @@
 # Definições das classes dos itens de viagem
 
 class Item:
-    def __init__(self, nome, peso, volume, categoria, genero, estacao = None, obrigatorio = False):
+    def __init__(self, nome, peso, volume, categoria, genero, estacao = None, obrigatorio = False, multiplo = False):
         self.nome = nome
         self.peso = peso
         self.volume = volume
@@ -9,6 +9,7 @@ class Item:
         self.estacao = estacao
         self.genero = genero
         self.obrigatorio = obrigatorio
+        self.multiplo = multiplo
 
 itens = [
     # Itens unissex (sem estação definida)
@@ -16,18 +17,18 @@ itens = [
     Item("tênis", 0.8, 2.0, "calçado", "unissex"),
     Item("bota de trilha", 1.2, 3.5, "calçado", "unissex"),
     Item("bota", 1.1, 3.0, "calçado", "unissex", estacao="inverno"),
-    Item("meia", 0.05, 0.1, "roupa íntima", "unissex", obrigatorio=True),
+    Item("meia", 0.05, 0.1, "roupa íntima", "unissex", obrigatorio=True, multiplo=True),
     Item("calça jeans", 0.7, 1.5, "roupa", "unissex"),
     Item("calça chino", 0.6, 1.2, "roupa", "unissex"),
     Item("calça trilha", 0.65, 1.3, "roupa", "unissex"),
-    Item("shorts", 0.4, 0.9, "roupa", "unissex", estacao="verao"),
+    Item("shorts", 0.4, 0.9, "roupa", "unissex", estacao="verao", multiplo=True),
     Item("shorts esporte", 0.35, 0.8, "roupa", "unissex", estacao="verao"),
     Item("calção de banho", 0.3, 0.7, "roupa", "unissex", estacao="verao"),
-    Item("cueca", 0.1, 0.15, "roupa íntima", "unissex", obrigatorio=True),
-    Item("camiseta", 0.3, 0.8, "roupa", "unissex", obrigatorio=True),
+    Item("cueca", 0.1, 0.15, "roupa íntima", "unissex", obrigatorio=True, multiplo=True),
+    Item("camiseta", 0.3, 0.8, "camis", "unissex", obrigatorio=True, multiplo=True),
     Item("camisa esporte", 0.35, 0.9, "roupa", "unissex", estacao="verao"),
-    Item("camisa manga longa", 0.4, 1.0, "roupa", "unissex"),
-    Item("camisa manga curta", 0.35, 0.8, "roupa", "unissex", estacao="verao"),
+    Item("camisa manga longa", 0.4, 1.0, "roupa", "unissex", multiplo=True),
+    Item("camisa manga curta", 0.35, 0.8, "roupa", "unissex", estacao="verao", multiplo=True),
     Item("jaqueta corta vento", 0.6, 1.2, "roupa", "unissex", estacao="outono"),
     Item("jaqueta jeans", 0.9, 1.8, "roupa", "unissex", estacao="inverno"),
     Item("suéter", 0.7, 1.5, "roupa", "unissex", estacao="outono"),
@@ -56,17 +57,17 @@ itens = [
     Item("pijama", 0.6, 1.0, "roupa", "unissex", estacao="inverno"),
 
     # Itens femininos extras
-    Item("calcinha", 0.1, 0.15, "roupa íntima", "feminino", obrigatorio=True),
-    Item("sutiã", 0.15, 0.2, "roupa íntima", "feminino", obrigatorio=True),
-    Item("vestido", 0.6, 1.3, "roupa", "feminino", estacao="verao"),
-    Item("blusa regata", 0.25, 0.5, "roupa", "feminino", estacao="verao"),
-    Item("saia", 0.4, 0.8, "roupa", "feminino", estacao="outono"),
+    Item("calcinha", 0.1, 0.15, "roupa íntima", "feminino", obrigatorio=True, multiplo=True),
+    Item("sutiã", 0.15, 0.2, "roupa íntima", "feminino", obrigatorio=True, multiplo=True),
+    Item("vestido", 0.6, 1.3, "roupa", "feminino", estacao="verao", multiplo=True),
+    Item("blusa regata", 0.25, 0.5, "roupa", "feminino", estacao="verao", multiplo=True),
+    Item("saia", 0.4, 0.8, "roupa", "feminino", estacao="outono", multiplo=True),
     Item("casaco leve", 0.7, 1.2, "roupa", "feminino", estacao="outono"),
     Item("jaqueta de couro", 0.9, 1.5, "roupa", "feminino", estacao="inverno"),
     Item("chapéu", 0.2, 0.3, "acessório", "feminino", estacao="verao"),
     Item("bijuterias", 0.1, 0.1, "acessório", "feminino"),
     Item("maquiagem básica", 0.3, 0.4, "higiene", "feminino", obrigatorio=True),
-    Item("absorventes", 0.15, 0.2, "higiene", "feminino", obrigatorio=True),
+    Item("absorventes", 0.15, 0.2, "higiene", "feminino", obrigatorio=True, multiplo=True),
     Item("escova de cabelo", 0.15, 0.3, "higiene", "feminino", obrigatorio=True),
     Item("secador de cabelo portátil", 0.6, 0.8, "eletrônico", "feminino"),
     Item("creme hidratante", 0.2, 0.3, "higiene", "feminino"),

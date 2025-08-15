@@ -28,19 +28,30 @@ def restringir_item_genero(pontos, genero_viajante, individuo, itens):
 
 # Capacidade da mochila
 
-def restringir_capacidade_mochila(pontos, capacidade_mochila, individuo, itens):
+def restringir_capacidade_mochila(pontos, capacidade_mochila, volume_mochila, individuo, itens):
     peso_total_individuo = 0
-
+    volume_total_individuo = 0
+    
     for indice, selecao in enumerate(individuo):
         if selecao != 0:
             peso_total_individuo += itens[indice].peso * selecao
-
+            volume_total_individuo += itens[indice].volume * selecao
     #print(round(peso_total_individuo, 2))
-
-    if peso_total_individuo <= capacidade_mochila:
+    if peso_total_individuo <= capacidade_mochila and volume_total_individuo <= volume_mochila:
         return pontos
     else:
-        return pontos - 50
+        return 0
+
+
+#def restringir_capacidade_mochila(pontos, capacidade_mochila, individuo, itens):
+ #   peso_total = sum(itens[i].peso * qtd for i, qtd in enumerate(individuo) if qtd != 0)
+  #  excesso = peso_total - capacidade_mochila
+    
+  #  if excesso > 0:
+   #     penalizacao = excesso * 10  # quanto maior o excesso, mais penaliza
+    #    return pontos - penalizacao
+   # return pontos
+
 
 # Volume da mochila
 
@@ -178,12 +189,12 @@ def restringir_categoria(pontos, numero_dias_viagem, individuo, itens):
                     individuo[indice] = 1
                 cont_calcado +=selecao
             # Verifica se o item pertence à categoria "roupa íntima"
-            if itens[indice].categoria == "eletrônico":
+            if itens[indice].categoria == "eletrônico" or itens[indice].categoria == "acessório":
                 # Se a quantidade selecionada for menor que o ideal, aplica penalidade
                 if selecao > 1:
                     individuo[indice] = 1
     if cont_calcado > numero_dias_viagem and numero_dias_viagem < 7:
-        penalizacao = 50
+        penalizacao = 50*cont_calcado
     # Caso todas as quantidades estejam dentro do esperado, retorna os pontos originais
     return pontos - penalizacao
             

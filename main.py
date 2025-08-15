@@ -4,6 +4,7 @@ import pandas as pd
 import pygad 
 from item import itens
 from restricoes import restringir_capacidade_mochila, restringir_genero, restringir_item_obrigatorio, restringir_itens_estacao, restringir_peca_intimas, restringir_volume_mochila, restringir_item_unitario, recompensar_peca_intimas, restringir_categoria
+import random
 
 # Input das informações gerais da viagem
 genero_viajante = "masculino" #str(input("Informe o gênero: "))
@@ -25,11 +26,11 @@ def fitness_function(ga_instance, individuo, solution_idx):
     #if pontos_ajustados == 0:
         #return 0
 
-    pontos_ajustados = restringir_capacidade_mochila(pontos_inicial, capacidade_mochila, individuo, itens)
+    pontos_ajustados = restringir_capacidade_mochila(pontos_inicial, capacidade_mochila, volume_mochila, individuo, itens)
     #if pontos_ajustados == 0:
     #     return 0
 
-    pontos_ajustados = restringir_volume_mochila(pontos_ajustados, volume_mochila, individuo, itens)
+    #pontos_ajustados = restringir_volume_mochila(pontos_ajustados, volume_mochila, individuo, itens)
     # if pontos_ajustados == 0:
     #     return 0
 
@@ -49,8 +50,11 @@ def fitness_function(ga_instance, individuo, solution_idx):
 
 
 gene_space = []
-for i in range(0, numero_dias_viagem + 1):
-    gene_space.append(i)
+for item in itens:
+    if item.multiplo:
+        gene_space.append(list(range(numero_dias_viagem + 1)))
+    else:
+        gene_space.append([0, 1])
 
 item_individuo = itens[0]
 n_variaveis = 0
@@ -62,14 +66,52 @@ populacao = 10*n_variaveis
 
 num_genes = len(itens)
 
+def gerar_populacao_inicial(itens, capacidade_mochila, volume_mochila, numero_dias_viagem):
+    
+    peso = 0
+    peso_adicional = 0
+    volume = 0
+    volume_adicional = 0
+
+    individuo = [0] * len(itens)
+    lista_indices = list(range(len(itens)))
+    random.shuffle(lista_indices)
+
+    for indice in lista_indices:
+        if itens[indice].multiplo == True:
+            _ = random.randint(0,numero_dias_viagem)
+            peso_adicional = itens[indice].peso * _
+            volume_adicional = itens[indice].volume * _
+            if peso + peso_adicional <= capacidade_mochila and volume + volume_adicional <= volume_mochila:
+                individuo[indice] = _
+                peso += peso_adicional
+                volume += volume_adicional
+            else:
+                individuo[indice] = 0
+        else: 
+            _ = random.randint(0, 1)
+            peso_adicional = itens[indice].peso * _
+            volume_adicional = itens[indice].volume * _
+            if peso + peso_adicional <= capacidade_mochila and volume + volume_adicional <= volume_mochila:
+                individuo[indice] = _
+                peso += peso_adicional
+                volume += volume_adicional
+            else:
+                individuo[indice] = 0
+    return individuo
+
+# Criar população inicial usando sua função
+pop_inicial = [gerar_populacao_inicial(itens, capacidade_mochila, volume_mochila, numero_dias_viagem) for _ in range(populacao)]
+
 ga_instance = pygad.GA(
-    num_generations=100, 
-    sol_per_pop=populacao, 
+    num_generations=100,
+    initial_population=pop_inicial, 
+    #sol_per_pop=populacao, 
     num_parents_mating=int(populacao*0.4), 
     fitness_func=fitness_function,
     num_genes = len(itens), 
     gene_type=int, 
-    gene_space = list(range(numero_dias_viagem + 1)), 
+    gene_space = gene_space, #list(range(numero_dias_viagem + 1)), 
     parent_selection_type="tournament",
     keep_elitism=3, 
     crossover_type="single_point", 
@@ -83,9 +125,20 @@ ga_instance.run()
 
 solution, fitness_value, _ = ga_instance.best_solution()
 
+# Inicializar acumuladores
+peso_total = 0
+volume_total = 0
+
 # Mostrar lista de itens correspondentes
 for idx, qtd in enumerate(solution):
     if qtd > 0:
+        peso_total += itens[idx].peso * qtd
+        volume_total += itens[idx].volume * qtd 
         print(f"{itens[idx].nome} - {qtd} unidade(s)")
+print(f"\nPeso total do melhor indivíduo: {peso_total}")
+print(f"Volume total do melhor indivíduo: {volume_total}")      
+
+
+
 
 ga_instance.plot_fitness()
