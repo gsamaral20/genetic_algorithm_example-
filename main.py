@@ -3,7 +3,7 @@
 import pandas as pd
 import pygad 
 from item import itens
-from restricoes import restringir_capacidade_mochila, restringir_genero, restringir_item_obrigatorio, restringir_itens_estacao, restringir_peca_intimas, restringir_volume_mochila, restringir_item_unitario, recompensar_peca_intimas, restringir_categoria
+from restricoes import restringir_capacidade_mochila, restringir_genero, restringir_item_obrigatorio, restringir_estacao, restringir_peca_intimas, restringir_volume_mochila, restringir_item_unitario, recompensar_peca_intimas, restringir_categoria
 import random
 
 # Input das informações gerais da viagem
@@ -39,7 +39,7 @@ def fitness_function(ga_instance, individuo, solution_idx):
     # Deixe as restrições suaves para ajudar na evolução:
     pontos_ajustados = restringir_genero(pontos_ajustados, genero_viajante, individuo, itens)
     pontos_ajustados = restringir_peca_intimas(pontos_ajustados, numero_dias_viagem, individuo, itens)
-    pontos_ajustados = restringir_itens_estacao(pontos_ajustados, estacao, individuo, itens)
+    pontos_ajustados = restringir_estacao(pontos_ajustados, estacao, individuo, itens)
     pontos_ajustados = restringir_item_obrigatorio(pontos_ajustados, individuo, itens)
     pontos_ajustados = restringir_item_unitario(pontos_ajustados, individuo, itens)
     pontos_ajustados = recompensar_peca_intimas(pontos_ajustados, numero_dias_viagem, individuo, itens)

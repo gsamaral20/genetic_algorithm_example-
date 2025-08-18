@@ -8,23 +8,25 @@ from item import itens
 def restringir_genero(pontos, genero_viajante, individuo, itens):
 
     for indice, selecao in enumerate(individuo):
-        if genero_viajante == "masculino":
-            if selecao != 0:
-                if itens[indice].genero == "feminino":
-                    individuo[indice] = 0
+        if genero_viajante == "masculino" and selecao != 0:
+            if itens[indice].genero == "feminino":
+                individuo[indice] = 0
     pontos = sum(individuo)
     return pontos
 
-
-def restringir_item_genero(pontos, genero_viajante, individuo, itens):
+def restringir_estacao(pontos, estacao, individuo, itens):
+    penalizacao = 0
     for indice, selecao in enumerate(individuo):
-        if genero_viajante == "masculino":
-            if selecao != 0:
-                if itens[indice].genero == "feminino":
-                    return 0
-    return pontos
-
-
+        if estacao == "verão" and selecao != 0 and itens[indice].estacao == "inverno":
+            individuo[indice] = 0
+        elif estacao == "inverno" and selecao != 0 and itens[indice].estacao == "verão":
+            individuo[indice] = 0
+        elif estacao == "verão" and selecao != 0 and itens[indice].estacao == "outono":
+            penalizacao += 30
+        elif estacao == "inverno" and selecao != 0 and itens[indice].estacao == "primavera":
+            penalizacao += 30 
+    pontos = sum(individuo)
+    return pontos - penalizacao
 
 # Capacidade da mochila
 
@@ -102,22 +104,20 @@ def restringir_itens_estacao(pontos, estacao, individuo, itens):
             item_estacao = itens[indice].estacao.lower() if itens[indice].estacao else ""
 
             # Se a estação da viagem for verão:
-            if estacao == "verao":
+            if estacao == "verao" and item_estacao == "inverno":
                 # Penaliza fortemente itens que são de inverno (muito incompatíveis)
-                if item_estacao == "inverno":
-                    penalizacao += 50
+                    penalizacao += pontos
                 # Penaliza menos itens de outono (menos incompatíveis)
-                elif item_estacao == "outono":
-                    penalizacao += 5
+            elif item_estacao == "outono":
+                penalizacao += 5
 
             # Se a estação da viagem for inverno:
-            elif estacao == "inverno":
+            elif estacao == "inverno" and item_estacao == "verao":
                 # Penaliza fortemente itens de verão (muito incompatíveis)
-                if item_estacao == "verao":
-                    penalizacao += 50
+                penalizacao += pontos
                 # Penaliza menos itens de primavera (menos incompatíveis)
-                elif item_estacao == "primavera":
-                    penalizacao += 5
+            elif item_estacao == "primavera":
+                penalizacao += 5
 
     # Retorna a pontuação original menos a penalização total acumulada
     return pontos - penalizacao
@@ -128,11 +128,10 @@ def restringir_item_obrigatorio(pontos, individuo, itens):
     # Percorre cada item selecionado pelo indivíduo
     for indice, selecao in enumerate(individuo):
         # Verifica se o item foi selecionado (quantidade maior que zero)
-        if selecao != 0:
+        if selecao != 0 and itens[indice].obrigatorio == True:
             # Verifica se o item é obrigatório
-            if itens[indice].obrigatorio == True:
-                # Acumula 10 pontos para cada item obrigatório selecionado
-                recompensar += 5
+            # Acumula 10 pontos para cada item obrigatório selecionado
+            recompensar += 5
     # Retorna a pontuação original somada à recompensa total
     return pontos + recompensar
 
